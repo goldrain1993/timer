@@ -123,5 +123,74 @@ swStartBtn.addEventListener('click', swStart);
 swPauseBtn.addEventListener('click', swPause);
 swResetBtn.addEventListener('click', swReset);
 
+// 음악 플레이리스트 기능
+const tracks = [
+    {
+        title: 'Beethoven - Für Elise',
+        src: 'https://cdn.pixabay.com/audio/2022/10/16/audio_12b6b1b2e7.mp3'
+    },
+    {
+        title: 'Mozart - Turkish March',
+        src: 'https://cdn.pixabay.com/audio/2022/10/16/audio_12b6b1b2e7.mp3'
+    },
+    {
+        title: 'Bach - Air on the G String',
+        src: 'https://cdn.pixabay.com/audio/2022/10/16/audio_12b6b1b2e7.mp3'
+    }
+];
+let currentTrack = 0;
+const audioPlayer = document.getElementById('audioPlayer');
+const playBtn = document.getElementById('playBtn');
+const pauseMusicBtn = document.getElementById('pauseMusicBtn');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const trackList = document.getElementById('trackList');
+
+function loadTrack(idx, autoplay = false) {
+    audioPlayer.src = tracks[idx].src;
+    updateTrackList(idx);
+    if (autoplay) {
+        audioPlayer.play();
+    }
+}
+function updateTrackList(activeIdx) {
+    trackList.innerHTML = '';
+    tracks.forEach((track, i) => {
+        const li = document.createElement('li');
+        li.textContent = track.title;
+        if (i === activeIdx) li.classList.add('active');
+        li.onclick = () => {
+            currentTrack = i;
+            loadTrack(currentTrack, true);
+        };
+        trackList.appendChild(li);
+    });
+}
+playBtn.addEventListener('click', () => {
+    // src가 없거나 현재 트랙이 다르면 src를 다시 설정
+    if (!audioPlayer.src || !audioPlayer.src.endsWith(tracks[currentTrack].src)) {
+        loadTrack(currentTrack, true);
+    } else {
+        audioPlayer.play();
+    }
+});
+pauseMusicBtn.addEventListener('click', () => audioPlayer.pause());
+prevBtn.addEventListener('click', () => {
+    currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
+    loadTrack(currentTrack, true);
+});
+nextBtn.addEventListener('click', () => {
+    currentTrack = (currentTrack + 1) % tracks.length;
+    loadTrack(currentTrack, true);
+});
+audioPlayer.addEventListener('ended', () => {
+    currentTrack = (currentTrack + 1) % tracks.length;
+    loadTrack(currentTrack, true);
+});
+document.addEventListener('DOMContentLoaded', () => {
+    loadTrack(currentTrack, false);
+    updateTrackList(currentTrack);
+});
+
 updateDisplay();
 updateStopwatch();
